@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: consumercare-portal
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn grievance_core.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.11
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true

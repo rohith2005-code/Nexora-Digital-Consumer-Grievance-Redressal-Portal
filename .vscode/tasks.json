@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Django Server",
+            "type": "shell",
+            "command": "python manage.py runserver 8000",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Run Automated Tests",
+            "type": "shell",
+            "command": "python manage.py test complaints",
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Seed Realistic Demo Data",
+            "type": "shell",
+            "command": "python seed_data.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Apply Database Migrations",
+            "type": "shell",
+            "command": "python manage.py makemigrations && python manage.py migrate",
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "python.languageServer": "Default",
+    "files.associations": {
+        "**/templates/**/*.html": "django-html"
+    },
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    },
+    "html.format.enable": true
+}

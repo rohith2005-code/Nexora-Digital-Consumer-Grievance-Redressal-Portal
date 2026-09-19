@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Citizen Registration | ConsumerCare Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container-narrow animate-fade-in" style="max-width: 640px; margin: 1.5rem auto 3rem;">
+    <div class="card-glass" style="padding: 2.5rem 2.25rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 52px; height: 52px; border-radius: 14px; background: var(--primary-gradient); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin: 0 auto 0.9rem; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h2 style="font-weight: 800; font-size: 1.75rem; color: var(--text-primary); letter-spacing: -0.02em;">
+                Citizen Account Registration
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; max-width: 480px; margin-left: auto; margin-right: auto;">
+                Create a verified citizen profile to file complaints, attach proof documents, and track live statutory redressal orders.
+            </p>
+        </div>
+
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label">First Name *</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div style="color: var(--danger); font-size: 0.78rem; margin-top: 0.25rem;">{{ form.first_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name *</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div style="color: var(--danger); font-size: 0.78rem; margin-top: 0.25rem;">{{ form.last_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Username *</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div style="color: var(--danger); font-size: 0.78rem; margin-top: 0.25rem;">{{ form.username.errors.0 }}</div>
+                {% endif %}
+                <div class="form-hint">Used to access your personal consumer dashboard.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div style="color: var(--danger); font-size: 0.78rem; margin-top: 0.25rem;">{{ form.email.errors.0 }}</div>
+                {% endif %}
+                <div class="form-hint">Official inquiry notices, seller replies, and orders will be delivered here.</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div style="color: var(--danger); font-size: 0.78rem; margin-top: 0.25rem;">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password *</label>
+                    {{ form.confirm_password }}
+                    {% if form.confirm_password.errors %}
+                        <div style="color: var(--danger); font-size: 0.78rem; margin-top: 0.25rem;">{{ form.confirm_password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Citizen Privacy Guarantee Banner -->
+            <div style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.15); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin: 1.25rem 0 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-lock" style="color: var(--primary); font-size: 1.1rem;"></i>
+                <div style="font-size: 0.82rem; color: #1e40af; line-height: 1.4;">
+                    <strong>Citizen Data Protection:</strong> Your contact and purchase documents are kept strictly confidential and only shared with verified grievance officers and the opposing merchant for inquiry.
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 700; padding: 0.85rem; font-size: 1rem; border-radius: var(--radius-md);">
+                    <i class="fa-solid fa-user-check"></i> Complete Citizen Registration
+                </button>
+            </div>
+        </form>
+
+        <div style="text-align: center; font-size: 0.9rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1.25rem; margin-top: 1.5rem;">
+            Already have an account? <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Sign in here &rarr;</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

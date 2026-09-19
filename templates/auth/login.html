@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In | ConsumerCare Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="auth-split-wrapper animate-fade-in">
+
+    <!-- Left Column: Authority Showcase & Trust Indicators -->
+    <div class="auth-showcase-panel">
+        <div>
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #93c5fd; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-shield-halved" style="color: #38bdf8;"></i> Official Statutory Portal
+            </div>
+
+            <h1 style="font-size: 2.2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 1rem; color: #ffffff;">
+                Protecting Consumers.<br>
+                <span style="background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 50%, #a7f3d0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Enforcing Redressal.</span>
+            </h1>
+
+            <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 2rem;">
+                Empowering citizens with end-to-end digital grievance registration, evidence verification, and enforceable authority redressal orders against defective goods and unfair trade practices.
+            </p>
+
+            <!-- 3 Modern Advantage Pillars -->
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                <div style="display: flex; align-items: flex-start; gap: 0.85rem; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); padding: 0.85rem 1rem;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.92rem; color: #ffffff;">24x7 Statutory SLA Monitoring</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.15rem;">Automated response timers and officer escalation guarantees.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: flex-start; gap: 0.85rem; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); padding: 0.85rem 1rem;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(167, 243, 208, 0.2); color: #34d399; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.92rem; color: #ffffff;">AI Duplicate & Similarity Clustering</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.15rem;">Identifies recurring merchant defects and groups related complaints.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: flex-start; gap: 0.85rem; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); padding: 0.85rem 1rem;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(192, 132, 252, 0.2); color: #c084fc; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                        <i class="fa-solid fa-gavel"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.92rem; color: #ffffff;">Enforceable Redressal Orders</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.15rem;">Statutory refund, replacement, repair, and compensation directives.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Trust Badge -->
+        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-md); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; color: #cbd5e1;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-circle-check" style="color: #4ade80;"></i>
+                <span><strong>94.5%</strong> Redressal Rate across 12,000+ Cases</span>
+            </div>
+            <span style="font-size: 0.75rem; color: #94a3b8;">SSL 256-bit Encrypted</span>
+        </div>
+    </div>
+
+    <!-- Right Column: Liquid Glass Sign In Form Card -->
+    <div class="auth-form-card">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 52px; height: 52px; border-radius: 14px; background: var(--primary-gradient); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin: 0 auto 0.9rem; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);">
+                <i class="fa-solid fa-fingerprint"></i>
+            </div>
+            <h2 style="font-weight: 800; font-size: 1.7rem; color: var(--text-primary); letter-spacing: -0.02em;">
+                Portal Sign In
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.25rem;">
+                Access your Consumer Dashboard or Officer Adjudication Portal
+            </p>
+        </div>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label" for="usernameField">
+                    <i class="fa-solid fa-user" style="color: var(--primary); font-size: 0.82rem;"></i> Username
+                </label>
+                <input type="text" name="username" id="usernameField" class="form-control" placeholder="Enter username (e.g. rahul_consumer)" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <label class="form-label" for="passwordField" style="margin-bottom: 0;">
+                        <i class="fa-solid fa-lock" style="color: var(--primary); font-size: 0.82rem;"></i> Password
+                    </label>
+                </div>
+                <input type="password" name="password" id="passwordField" class="form-control" placeholder="Enter your password..." required>
+            </div>
+
+            <div style="margin-top: 1.75rem; margin-bottom: 1.25rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 700; padding: 0.85rem; font-size: 1rem; border-radius: var(--radius-md);">
+                    Sign In to Portal <i class="fa-solid fa-arrow-right" style="font-size: 0.85rem;"></i>
+                </button>
+            </div>
+        </form>
+
+        <div style="text-align: center; font-size: 0.88rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1.25rem; margin-bottom: 1.5rem;">
+            New to ConsumerCare? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Create Consumer Account &rarr;</a>
+        </div>
+
+        <!-- 1-Click Demo Evaluation Credentials (For Mentors & Testing) -->
+        <div style="background: rgba(241, 245, 249, 0.7); border: 1.5px dashed #cbd5e1; border-radius: var(--radius-md); padding: 1rem; font-size: 0.82rem;">
+            <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.45rem;">
+                <i class="fa-solid fa-bolt-lightning" style="color: #f59e0b;"></i> Instant Demo Switcher (Click to Auto-Fill):
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('rahul_consumer', 'consumerpass123')" style="font-size: 0.8rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px;">
+                    <i class="fa-solid fa-user" style="color: var(--primary);"></i> Rahul (Consumer)
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('officer_admin', 'adminpass123')" style="font-size: 0.8rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px; border-color: #ddd6fe; color: #6d28d9;">
+                    <i class="fa-solid fa-gavel" style="color: #7c3aed;"></i> Officer Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function fillCredentials(user, pass) {
+    document.getElementById('usernameField').value = user;
+    document.getElementById('passwordField').value = pass;
+    // Add brief highlight feedback
+    const userField = document.getElementById('usernameField');
+    userField.style.borderColor = '#2563eb';
+    setTimeout(() => { userField.style.borderColor = ''; }, 600);
+}
+</script>
+{% endblock %}

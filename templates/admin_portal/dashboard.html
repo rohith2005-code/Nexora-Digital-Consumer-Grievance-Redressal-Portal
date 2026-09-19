@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block title %}Adjudication Command Center | Redressal Authority{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+
+    <!-- Authority Executive Header -->
+    <div class="card-glass" style="margin-bottom: 2rem; padding: 1.75rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+        <div>
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(124, 58, 237, 0.08); border: 1px solid rgba(124, 58, 237, 0.2); padding: 0.3rem 0.8rem; border-radius: var(--radius-full); font-size: 0.76rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-gavel"></i> Grievance Redressal Authority &bull; Adjudication Division
+            </div>
+            <h1 style="font-size: 1.95rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.2;">
+                Grievance Adjudication Command Center
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+                Presiding Officer: <strong>{{ user.get_full_name|default:user.username }}</strong> &bull; Inspect complaints, verify evidentiary invoices, and issue binding redressal orders.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="{% url 'admin_export_csv' %}" class="btn btn-outline btn-sm" style="font-weight: 700; border-radius: var(--radius-full);" title="Download grievance records as CSV">
+                <i class="fa-solid fa-file-arrow-down" style="color: var(--success);"></i> Export CSV Report
+            </a>
+            <a href="/django-admin/complaints/complaint/" target="_blank" class="btn btn-secondary btn-sm" style="font-weight: 700; border-radius: var(--radius-full);" title="Open Django Administration">
+                <i class="fa-solid fa-gear" style="color: #7c3aed;"></i> Django Admin Console
+            </a>
+        </div>
+    </div>
+
+    <!-- Metrics KPI Strip (7-Column Glass Grid) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="kpi-card slate" style="padding: 1.1rem 1.25rem;">
+            <div class="kpi-val" style="font-size: 1.85rem;">{{ total }}</div>
+            <div class="kpi-label">Total Filed</div>
+        </div>
+        <div class="kpi-card blue" style="padding: 1.1rem 1.25rem;">
+            <div class="kpi-val" style="font-size: 1.85rem;">{{ submitted }}</div>
+            <div class="kpi-label">New / Unassigned</div>
+        </div>
+        <div class="kpi-card amber" style="padding: 1.1rem 1.25rem;">
+            <div class="kpi-val" style="font-size: 1.85rem;">{{ under_review }}</div>
+            <div class="kpi-label">Under Scrutiny</div>
+        </div>
+        <div class="kpi-card red" style="padding: 1.1rem 1.25rem;">
+            <div class="kpi-val" style="font-size: 1.85rem;">{{ info_required }}</div>
+            <div class="kpi-label">Proof Required</div>
+        </div>
+        <div class="kpi-card purple" style="padding: 1.1rem 1.25rem;">
+            <div class="kpi-val" style="font-size: 1.85rem;">{{ in_progress }}</div>
+            <div class="kpi-label">In Inquiry</div>
+        </div>
+        <div class="kpi-card red" style="padding: 1.1rem 1.25rem; {% if escalated > 0 %}background: rgba(254, 242, 242, 0.95); border-color: #fca5a5;{% endif %}">
+            <div class="kpi-val" style="font-size: 1.85rem; color: #dc2626;">{{ escalated }}</div>
+            <div class="kpi-label" style="color: {% if escalated > 0 %}#991b1b{% else %}var(--text-muted){% endif %}; font-weight: 800;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: #dc2626;"></i> SLA Breached
+            </div>
+        </div>
+        <div class="kpi-card green" style="padding: 1.1rem 1.25rem;">
+            <div class="kpi-val" style="font-size: 1.85rem;">{{ resolved|add:closed }}</div>
+            <div class="kpi-label">Redressed</div>
+        </div>
+    </div>
+
+    <!-- Analytical Overview Strip (Sector, Compliance, Priority) -->
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem;">
+        <!-- SLA Compliance Progress Bar -->
+        <div class="card-glass" style="padding: 1.35rem 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 0.84rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em;">
+                    <i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> SLA Adjudication Rate
+                </span>
+                <span style="font-size: 0.88rem; font-weight: 800; color: var(--success);">
+                    {% if total > 0 %}{% widthratio resolved|add:closed total 100 %}%{% else %}100%{% endif %} Redressed
+                </span>
+            </div>
+            <!-- Multi-segment visual bar -->
+            <div style="height: 10px; border-radius: 9999px; background: #e2e8f0; overflow: hidden; display: flex; margin-bottom: 0.75rem;">
+                <div style="background: var(--success); width: {% if total > 0 %}{% widthratio resolved|add:closed total 100 %}{% else %}60{% endif %}%; transition: width 0.5s;" title="Resolved"></div>
+                <div style="background: var(--warning); width: {% if total > 0 %}{% widthratio under_review|add:in_progress total 100 %}{% else %}25{% endif %}%; transition: width 0.5s;" title="In Progress"></div>
+                <div style="background: #dc2626; width: {% if total > 0 %}{% widthratio escalated total 100 %}{% else %}15{% endif %}%; transition: width 0.5s;" title="SLA Breached"></div>
+            </div>
+            <div style="display: flex; gap: 1rem; font-size: 0.76rem; color: var(--text-muted); flex-wrap: wrap;">
+                <span><i class="fa-solid fa-circle" style="color: var(--success); font-size: 0.5rem;"></i> Redressed</span>
+                <span><i class="fa-solid fa-circle" style="color: var(--warning); font-size: 0.5rem;"></i> Scrutiny / Inquiry</span>
+                <span><i class="fa-solid fa-circle" style="color: #dc2626; font-size: 0.5rem;"></i> SLA Escalated</span>
+            </div>
+        </div>
+
+        <!-- Priority Distribution Quick Matrix -->
+        <div class="card-glass" style="padding: 1.35rem 1.5rem;">
+            <div style="font-size: 0.84rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.85rem;">
+                <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Priority Adjudication Queue
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+                <div style="text-align: center; flex: 1; background: #fef2f2; border: 1px solid #fca5a5; border-radius: var(--radius-md); padding: 0.5rem 0.4rem;">
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #991b1b;">High</div>
+                    <div style="font-size: 0.72rem; color: #b91c1c; font-weight: 700;">24h SLA</div>
+                </div>
+                <div style="text-align: center; flex: 1; background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-md); padding: 0.5rem 0.4rem;">
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #92400e;">Medium</div>
+                    <div style="font-size: 0.72rem; color: #b45309; font-weight: 700;">48h SLA</div>
+                </div>
+                <div style="text-align: center; flex: 1; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 0.5rem 0.4rem;">
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #065f46;">Low</div>
+                    <div style="font-size: 0.72rem; color: #047857; font-weight: 700;">72h SLA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Engine Status Card -->
+        <div class="card-glass" style="padding: 1.35rem 1.5rem;">
+            <div style="font-size: 0.84rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: #8b5cf6;"></i> Statutory AI Engine Active
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+                <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 0.75rem;"></i> Duplicate Detection: <strong>TF-IDF Active</strong><br>
+                <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 0.75rem;"></i> SLA Heartbeat: <strong>Real-time Audit</strong><br>
+                <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 0.75rem;"></i> Citizen Chatbot: <strong>Online 24x7</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters & Query Toolbar -->
+    <div class="card-glass" style="margin-bottom: 1.75rem; padding: 1.25rem 1.5rem;">
+        <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) auto; gap: 1rem; align-items: flex-end;">
+            <!-- Status Filter -->
+            <div>
+                <label style="font-size: 0.76rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.3rem;">Case Status</label>
+                <select name="status" class="form-select" style="padding: 0.5rem 0.8rem; font-size: 0.86rem; border-radius: var(--radius-md);">
+                    <option value="all">All Case Statuses</option>
+                    {% for st_val, st_name in statuses %}
+                        <option value="{{ st_val }}" {% if status_filter == st_val %}selected{% endif %}>{{ st_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Priority Filter -->
+            <div>
+                <label style="font-size: 0.76rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.3rem;">Priority Target</label>
+                <select name="priority" class="form-select" style="padding: 0.5rem 0.8rem; font-size: 0.86rem; border-radius: var(--radius-md);">
+                    <option value="all">All Priorities</option>
+                    {% for pr_val, pr_name in priorities %}
+                        <option value="{{ pr_val }}" {% if priority_filter == pr_val %}selected{% endif %}>{{ pr_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div>
+                <label style="font-size: 0.76rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.3rem;">Dispute Sector</label>
+                <select name="category" class="form-select" style="padding: 0.5rem 0.8rem; font-size: 0.86rem; border-radius: var(--radius-md);">
+                    <option value="all">All Categories</option>
+                    {% for cat_val, cat_name in categories %}
+                        <option value="{{ cat_val }}" {% if category_filter == cat_val %}selected{% endif %}>{{ cat_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Search Query -->
+            <div>
+                <label style="font-size: 0.76rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.3rem;">Keyword / ID Search</label>
+                <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="ID, product, consumer..." style="padding: 0.5rem 0.8rem; font-size: 0.86rem; border-radius: var(--radius-md);">
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 0.45rem;">
+                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.6rem 1.2rem; border-radius: var(--radius-md);">
+                    <i class="fa-solid fa-filter"></i> Apply Filters
+                </button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-sm" style="padding: 0.6rem 0.9rem; border-radius: var(--radius-md);" title="Reset filters">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Grievances Registry Table -->
+    <div class="card-glass" style="padding: 0; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="padding-left: 1.5rem;">Complaint Ref</th>
+                        <th>Complainant</th>
+                        <th>Product & Merchant</th>
+                        <th>Sector</th>
+                        <th>Claim (₹)</th>
+                        <th>Priority</th>
+                        <th>Status & SLA</th>
+                        <th>Registered Date</th>
+                        <th style="text-align: right; padding-right: 1.5rem;">Adjudication</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in complaints %}
+                    <tr style="transition: background 0.15s;">
+                        <td style="padding-left: 1.5rem;">
+                            <strong style="font-family: monospace; color: var(--primary); font-size: 0.95rem; letter-spacing: -0.01em;">{{ c.complaint_id }}</strong>
+                            {% if c.attachment %}
+                                <i class="fa-solid fa-paperclip" title="Evidence attached" style="color: var(--primary); font-size: 0.75rem; margin-left: 0.35rem;"></i>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800;">
+                                    {{ c.user.username|make_list|first|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: var(--text-primary); font-size: 0.88rem;">{{ c.user.get_full_name|default:c.user.username }}</div>
+                                    <small style="color: var(--text-muted); font-size: 0.76rem;">{{ c.user.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 700; color: var(--text-primary); font-size: 0.9rem;">{{ c.product_name }}</div>
+                            <small style="color: var(--text-muted); font-size: 0.78rem;">Merchant: {{ c.seller }}</small>
+                        </td>
+                        <td>
+                            <span style="font-size: 0.82rem; color: var(--text-secondary); background: #f8fafc; border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--radius-sm);">
+                                {{ c.category }}
+                            </span>
+                        </td>
+                        <td><strong style="color: #047857; font-size: 0.92rem;">₹{{ c.amount_paid }}</strong></td>
+                        <td>
+                            <span class="priority-pill priority-{{ c.priority|lower }}">
+                                <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> {{ c.priority }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {{ c.badge_class }}">{{ c.status }}</span>
+                            <div style="margin-top: 0.35rem;">
+                                <span class="sla-badge {{ c.sla_badge_class }}" title="Statutory SLA Target">
+                                    <i class="fa-solid fa-clock"></i> {{ c.sla_time_display }}
+                                </span>
+                            </div>
+                        </td>
+                        <td style="font-size: 0.82rem; color: var(--text-muted);">
+                            {{ c.created_at|date:"d M Y, H:i" }}
+                        </td>
+                        <td style="text-align: right; padding-right: 1.5rem;">
+                            <a href="{% url 'admin_review_complaint' complaint_id=c.complaint_id %}" class="btn btn-primary btn-sm" style="font-weight: 700; border-radius: var(--radius-full); box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.4);">
+                                <i class="fa-solid fa-gavel"></i> Adjudicate &rarr;
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 3.5rem 2rem; color: var(--text-muted);">
+                            <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; display: block; margin-bottom: 0.75rem; color: #cbd5e1;"></i>
+                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-primary); margin-bottom: 0.25rem;">No Adjudication Records Found</div>
+                            No complaints match the specified query filters.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

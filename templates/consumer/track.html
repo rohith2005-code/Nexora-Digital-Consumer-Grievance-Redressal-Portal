@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Grievance Status | ConsumerCare Portal{% endblock %}
+
+{% block content %}
+<div class="container-narrow animate-fade-in" style="max-width: 860px; margin: 1.5rem auto 3rem;">
+
+    <!-- Tracking Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); padding: 0.3rem 0.85rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-satellite-dish"></i> Instant Statutory Grievance Verification
+        </div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em;">
+            Track Grievance Progress
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 580px; margin: 0.25rem auto 1.5rem;">
+            Enter your unique Complaint Reference ID (e.g. <code>CMP-2026-000197</code>) to view real-time inquiry status, assigned timelines, and official authority orders.
+        </p>
+
+        <!-- Official Tracking Input Console -->
+        <form action="{% url 'track_complaint' %}" method="GET" class="card-glass" style="max-width: 580px; margin: 0 auto; display: flex; align-items: center; padding: 0.4rem 0.5rem 0.4rem 1rem; border-radius: var(--radius-full); box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.15);">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--primary); font-size: 1.1rem; margin-right: 0.5rem;"></i>
+            <input type="text" name="complaint_id" value="{{ complaint_id }}" placeholder="Enter Complaint Reference ID..." required autofocus style="flex: 1; border: none; background: transparent; outline: none; font-size: 0.95rem; font-family: inherit; color: var(--text-primary);">
+            <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.65rem 1.4rem; border-radius: var(--radius-full); font-weight: 700;">
+                Verify Status &rarr;
+            </button>
+        </form>
+    </div>
+
+    <!-- Grievance Found View -->
+    {% if complaint %}
+    <div class="card-glass" style="padding: 2.25rem; margin-bottom: 2rem; border-top: 5px solid var(--primary);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border);">
+            <div>
+                <div style="font-size: 0.72rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.2rem;">
+                    Verified Grievance Record Found
+                </div>
+                <h2 style="font-size: 2rem; font-weight: 800; font-family: monospace; color: var(--text-primary); letter-spacing: -0.01em;">
+                    {{ complaint.complaint_id }}
+                </h2>
+                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-secondary); margin-top: 0.2rem;">
+                    {{ complaint.product_name }}
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span class="badge {{ complaint.badge_class }}" style="font-size: 0.9rem; padding: 0.4rem 1rem;">
+                    {{ complaint.status }}
+                </span>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    Registered: {{ complaint.created_at|date:"d M Y, H:i" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Stepper -->
+        <div style="background: rgba(248, 250, 252, 0.7); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1.75rem 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.86rem; margin-bottom: 1.25rem;">
+                <span style="font-weight: 800; color: var(--text-primary);">
+                    <i class="fa-solid fa-route" style="color: var(--primary);"></i> Statutory Investigation Stages
+                </span>
+                <span style="color: var(--text-muted); font-size: 0.82rem;">Current Stage: <strong style="color: var(--text-primary);">{{ complaint.status }}</strong></span>
+            </div>
+
+            {% if step_info.is_warning %}
+            <div class="alert alert-warning" style="margin-bottom: 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.2rem;"></i>
+                    <div style="font-size: 0.88rem;">
+                        <strong>Action Required:</strong> The Authority has requested additional documents. Please log in to your Consumer Dashboard to furnish the requested records.
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mini-stepper">
+                {% for step in step_info.steps %}
+                    <div class="mini-step {% if forloop.counter < step_info.step_index %}completed{% elif forloop.counter == step_info.step_index %}{% if step_info.is_warning %}warning{% else %}active{% endif %}{% endif %}">
+                        <div class="mini-node">
+                            {% if forloop.counter < step_info.step_index %}
+                                <i class="fa-solid fa-check"></i>
+                            {% else %}
+                                {{ forloop.counter }}
+                            {% endif %}
+                        </div>
+                        <span>{{ step }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Case Particulars Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; padding: 1.25rem; background: rgba(248, 250, 252, 0.6); border-radius: var(--radius-md); border: 1px solid var(--border);">
+            <div>
+                <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Dispute Sector</span>
+                <div style="font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">{{ complaint.category }}</div>
+            </div>
+            <div>
+                <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Seller / Merchant</span>
+                <div style="font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">{{ complaint.seller }}</div>
+            </div>
+            <div>
+                <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Claim Nature</span>
+                <div style="font-weight: 700; color: var(--text-primary); margin-top: 0.2rem;">{{ complaint.complaint_type }}</div>
+            </div>
+            <div>
+                <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Desired Redressal</span>
+                <div style="font-weight: 800; color: var(--primary); margin-top: 0.2rem;">{{ complaint.expected_resolution }}</div>
+            </div>
+        </div>
+
+        <!-- Official Authority Response -->
+        <div style="margin-top: 1.75rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <h4 style="font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-stamp" style="color: var(--primary);"></i> Official Authority Resolution Order & Findings:
+            </h4>
+            {% if complaint.admin_response %}
+                <div style="background: {% if complaint.is_resolved %}rgba(236, 253, 245, 0.85){% else %}rgba(239, 246, 255, 0.85){% endif %}; border-radius: var(--radius-md); padding: 1.25rem; font-size: 0.92rem; color: #1e293b; line-height: 1.6; border-left: 4px solid {% if complaint.is_resolved %}var(--success){% else %}var(--primary){% endif %}; border: 1px solid {% if complaint.is_resolved %}#a7f3d0{% else %}#bfdbfe{% endif %};">
+                    {{ complaint.admin_response|linebreaks }}
+                </div>
+            {% else %}
+                <div style="background: rgba(248, 250, 252, 0.6); padding: 1.25rem; border-radius: var(--radius-md); color: var(--text-muted); font-size: 0.9rem; border: 1px dashed var(--border);">
+                    <em>No official remarks recorded yet. This case is currently undergoing scrutiny by our assigned Grievance Officers.</em>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+            <div style="margin-top: 1.75rem; text-align: right;">
+                <a href="{% url 'complaint_detail' complaint_id=complaint.complaint_id %}" class="btn btn-outline btn-sm" style="border-radius: var(--radius-full); font-weight: 700;">
+                    <i class="fa-solid fa-folder-open"></i> Open in My Dashboard &rarr;
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% elif not_found %}
+    <!-- Not Found Card -->
+    <div class="card-glass" style="text-align: center; padding: 3.5rem 2rem; border-left: 5px solid var(--danger);">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #fef2f2; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.75rem;">
+            <i class="fa-solid fa-magnifying-glass-chart"></i>
+        </div>
+        <h3 style="font-weight: 800; font-size: 1.35rem; color: var(--text-primary); margin-bottom: 0.35rem;">
+            No Grievance Record Found
+        </h3>
+        <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.92rem;">
+            No complaint matches the tracking reference <strong>"{{ complaint_id }}"</strong>. Please verify the ID sent upon submission or check your dashboard.
+        </p>
+        <a href="{% url 'track_complaint' %}" class="btn btn-secondary btn-sm" style="border-radius: var(--radius-full);">Try Another Search</a>
+    </div>
+
+    {% else %}
+    <!-- Initial State Guide -->
+    <div class="card-glass" style="text-align: center; padding: 3.5rem 2rem;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.85rem;">
+            <i class="fa-solid fa-fingerprint"></i>
+        </div>
+        <h3 style="font-weight: 800; color: var(--text-primary); font-size: 1.25rem; margin-bottom: 0.4rem;">
+            Instant Statutory Grievance Lookup
+        </h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 480px; margin: 0 auto;">
+            Anyone can track verified redressal progress in real time using their assigned Complaint Reference ID.
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

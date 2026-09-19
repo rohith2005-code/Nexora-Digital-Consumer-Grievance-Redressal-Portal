@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+
+{% block title %}Case Adjudication: {{ complaint.complaint_id }} | Authority Portal{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+
+    <!-- Header Navigation & Status -->
+    <div class="card-glass" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 1.5rem;">
+        <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.2rem;">
+                <i class="fa-solid fa-gavel"></i> Statutory Dispute Adjudication
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+                <h1 style="font-size: 1.8rem; font-weight: 800; font-family: monospace; color: var(--gov-navy-dark);">
+                    {{ complaint.complaint_id }}
+                </h1>
+                <span class="badge {{ complaint.badge_class }}" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">
+                    {{ complaint.status }}
+                </span>
+                <span class="priority-pill priority-{{ complaint.priority|lower }}" style="font-size: 0.85rem;">
+                    <i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> {{ complaint.priority }} Priority
+                </span>
+                <span class="sla-badge {{ complaint.sla_badge_class }}" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">
+                    <i class="fa-solid fa-clock"></i> SLA: {{ complaint.sla_time_display }}
+                </span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem;">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Registry Dashboard
+            </a>
+            <a href="{% url 'track_complaint' %}?complaint_id={{ complaint.complaint_id }}" target="_blank" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Public View
+            </a>
+        </div>
+    </div>
+
+    <!-- SLA Alert Banner -->
+    {% if complaint.is_sla_breached %}
+    <div style="background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: var(--radius-lg); padding: 1rem 1.4rem; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <strong style="color: #991b1b; font-size: 0.95rem;">⚠️ STATUTORY RESPONSE SLA BREACH DETECTED</strong>
+                <p style="color: #b91c1c; font-size: 0.84rem; margin-top: 0.2rem;">
+                    This grievance exceeded its mandatory {{ complaint.priority }}-priority resolution window (Target: {{ complaint.sla_deadline|date:"d M Y, H:i" }}). Case has been auto-escalated to the Senior Adjudication Officer.
+                </p>
+            </div>
+        </div>
+        <span class="sla-badge sla-breached" style="font-size: 0.88rem; padding: 0.45rem 0.95rem;">
+            {{ complaint.sla_time_display }}
+        </span>
+    </div>
+    {% elif not complaint.is_resolved %}
+    <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="font-size: 0.86rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-clock-rotate-left" style="color: var(--gov-blue);"></i>
+            <span>Statutory Adjudication Window: Target deadline <strong>{{ complaint.sla_deadline|date:"d M Y, H:i" }}</strong> ({{ complaint.priority }} Priority)</span>
+        </div>
+        <span class="sla-badge {{ complaint.sla_badge_class }}">
+            <i class="fa-solid fa-hourglass-half"></i> {{ complaint.sla_time_display }}
+        </span>
+    </div>
+    {% endif %}
+
+    <!-- Stepper Tracker -->
+    <div class="stepper-container" style="padding: 1.25rem 1.5rem; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+            <span style="font-weight: 700; color: var(--gov-navy);">
+                <i class="fa-solid fa-timeline"></i> Case Progression Stage
+            </span>
+            <span style="color: var(--text-muted);">Current: <strong>{{ complaint.status }}</strong></span>
+        </div>
+
+        <div class="stepper-progress-bar">
+            {% for step in step_info.steps %}
+                <div class="stepper-step {% if forloop.counter < step_info.step_index %}completed{% elif forloop.counter == step_info.step_index %}{% if step_info.is_warning %}warning{% else %}active{% endif %}{% endif %}">
+                    <div class="step-circle">
+                        {% if forloop.counter < step_info.step_index %}
+                            <i class="fa-solid fa-check"></i>
+                        {% else %}
+                            {{ forloop.counter }}
+                        {% endif %}
+                    </div>
+                    <div class="step-name">{{ step }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Adjudication Split Workbench -->
+    <div class="adjudication-layout">
+
+        <!-- Left: Dossier Facts & Evidence Review -->
+        <div>
+            <!-- Complainant Profile -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-id-card" style="color: var(--gov-blue);"></i> Complainant Particulars
+                    </h3>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);">User Record: #{{ complaint.user.id }}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.88rem;">
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Full Name</span>
+                        <div style="font-weight: 700; color: var(--gov-navy);">{{ complaint.user.get_full_name|default:complaint.user.username }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Email Address</span>
+                        <div style="font-weight: 600;">{{ complaint.user.email }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Username</span>
+                        <div style="font-weight: 600;">@{{ complaint.user.username }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Registered On</span>
+                        <div style="font-weight: 600;">{{ complaint.created_at|date:"d M Y, H:i" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction & Product Disputed Facts -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-file-lines" style="color: var(--gov-blue);"></i> Transaction & Dispute Summary
+                    </h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Product / Service</span>
+                        <div style="font-size: 1.05rem; font-weight: 800; color: var(--gov-navy);">{{ complaint.product_name }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Sector / Category</span>
+                        <div style="font-weight: 600;">{{ complaint.category }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Seller / Manufacturer</span>
+                        <div style="font-weight: 600;">{{ complaint.seller }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Purchase Date</span>
+                        <div style="font-weight: 600;">{{ complaint.purchase_date|date:"d M Y" }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Invoice Amount</span>
+                        <div style="font-size: 1.2rem; font-weight: 800; color: #047857;">₹{{ complaint.amount_paid }}</div>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Remedy Sought</span>
+                        <div style="font-size: 1rem; font-weight: 700; color: var(--gov-blue);">{{ complaint.expected_resolution }}</div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1.5px solid #f1f5f9; padding-top: 1rem;">
+                    <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Complainant Statement:</span>
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-top: 0.35rem; font-size: 0.9rem; line-height: 1.6; color: #334155;">
+                        {{ complaint.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔎 AI Duplicate & Similarity Detection Engine Panel -->
+            <div class="card" style="margin-bottom: 1.5rem; border-top: 3.5px solid #6366f1;">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <h3 class="card-title" style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.05rem;">
+                        <i class="fa-solid fa-microchip" style="color: #6366f1;"></i>
+                        AI Duplicate & Similarity Detection
+                    </h3>
+                    <span class="badge" style="background: #ede9fe; color: #6366f1; font-weight: 700;">
+                        {{ similar_cases|length }} Matched Case{{ similar_cases|length|pluralize }}
+                    </span>
+                </div>
+
+                {% if similar_cases %}
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.84rem; color: #1e40af;">
+                        <i class="fa-solid fa-circle-nodes" style="font-size: 1.1rem; margin-top: 2px;"></i>
+                        <div>
+                            <strong>NLP Text Analysis & Cross-Reference Notice:</strong>
+                            The system detected matching keywords and grievance descriptions filed against this product/vendor. Review candidate cases below to detect repeated defects or duplicate registrations.
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                        {% for match in similar_cases %}
+                        <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; background: #fafafa; transition: border-color 0.2s ease;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                    <strong style="font-family: monospace; color: var(--gov-navy); font-size: 0.95rem;">
+                                        {{ match.complaint.complaint_id }}
+                                    </strong>
+                                    <span class="badge {{ match.complaint.badge_class }}" style="font-size: 0.72rem; padding: 2px 7px;">
+                                        {{ match.complaint.status }}
+                                    </span>
+                                    {% if match.is_duplicate %}
+                                        <span class="badge" style="background: #fee2e2; color: #991b1b; font-size: 0.72rem; font-weight: 800;">
+                                            ⚠️ Potential Duplicate
+                                        </span>
+                                    {% else %}
+                                        <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 700;">
+                                            Similar Incident
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                                    <span style="font-size: 0.85rem; font-weight: 800; color: #4338ca;">
+                                        {{ match.score }}% Match
+                                    </span>
+                                    <a href="{% url 'admin_review_complaint' complaint_id=match.complaint.complaint_id %}" target="_blank" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;">
+                                        Compare Dossier <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Similarity progress bar -->
+                            <div style="height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 0.6rem;">
+                                <div style="height: 100%; width: {{ match.score }}%; background: {% if match.score >= 70 %}#ef4444{% elif match.score >= 50 %}#f59e0b{% else %}#3b82f6{% endif %}; border-radius: 3px;"></div>
+                            </div>
+
+                            <div style="font-size: 0.82rem; color: #475569; margin-bottom: 0.4rem;">
+                                <strong>Product:</strong> {{ match.complaint.product_name }} &bull; <strong>Seller:</strong> {{ match.complaint.seller }} &bull; <strong>Citizen:</strong> {{ match.complaint.user.get_full_name|default:match.complaint.user.username }}
+                            </div>
+                            <div style="font-size: 0.82rem; color: #334155; font-style: italic; background: #ffffff; padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid #e2e8f0; margin-bottom: 0.45rem;">
+                                "{{ match.complaint.description|truncatechars:150 }}"
+                            </div>
+
+                            {% if match.matched_keywords %}
+                            <div style="display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; font-size: 0.72rem;">
+                                <span style="color: var(--text-muted); font-weight: 600;">Matched NLP terms:</span>
+                                {% for kw in match.matched_keywords %}
+                                    <span style="background: #e0e7ff; color: #3730a3; padding: 1px 7px; border-radius: 3px; font-weight: 600;">{{ kw }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div style="text-align: center; padding: 1.5rem 1rem; color: var(--text-muted); font-size: 0.88rem;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 1.6rem; margin-bottom: 0.4rem; display: block;"></i>
+                        <span>No duplicate or similar grievance complaints detected across active records.</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Attached Verification Proofs -->
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-paperclip" style="color: var(--gov-cyan);"></i> Complainant Evidence Documents
+                    </h3>
+                </div>
+
+                {% if complaint.attachment %}
+                    <div style="background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-shield" style="font-size: 1.8rem; color: var(--gov-blue);"></i>
+                            <div>
+                                <strong style="font-size: 0.9rem; color: var(--gov-navy);">{{ complaint.attachment.name|cut:'complaint_evidence/' }}</strong>
+                                <div style="font-size: 0.76rem; color: var(--text-muted);">Uploaded Transaction Evidence</div>
+                            </div>
+                        </div>
+                        <a href="{{ complaint.attachment.url }}" target="_blank" class="btn btn-outline btn-sm">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Inspect Document
+                        </a>
+                    </div>
+
+                    {% if complaint.attachment.url|lower|slice:"-4:" == ".jpg" or complaint.attachment.url|lower|slice:"-5:" == ".jpeg" or complaint.attachment.url|lower|slice:"-4:" == ".png" or complaint.attachment.url|lower|slice:"-5:" == ".webp" %}
+                    <div style="margin-top: 1rem; text-align: center; background: #0f172a; padding: 0.75rem; border-radius: var(--radius-md);">
+                        <img src="{{ complaint.attachment.url }}" alt="Proof" style="max-width: 100%; max-height: 280px; border-radius: 4px; object-fit: contain;">
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div style="text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 0.88rem;">
+                        <i class="fa-regular fa-file" style="font-size: 1.8rem; margin-bottom: 0.4rem; display: block; opacity: 0.5;"></i>
+                        No external documents were attached with this registration.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Case Proceedings Log -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-clock-rotate-left" style="color: var(--purple);"></i> Case Proceedings Audit Log
+                    </h3>
+                </div>
+                <ul class="timeline-track">
+                    {% for event in timeline %}
+                    <li class="timeline-entry">
+                        <div class="timeline-entry-meta">
+                            {{ event.created_at|date:"d M Y, H:i" }} &bull;
+                            <span class="badge {{ event.complaint.badge_class }}" style="font-size: 0.7rem; padding: 1px 6px;">{{ event.status }}</span>
+                            {% if event.performed_by %}
+                                by {{ event.performed_by.username }}
+                            {% endif %}
+                        </div>
+                        <div class="timeline-entry-body">
+                            {{ event.remarks }}
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li style="color: var(--text-muted); font-size: 0.85rem;">No proceedings logged yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right: Official Adjudication Form (Sticky Panel) -->
+        <div>
+            <div class="card" style="border-top: 4px solid var(--gov-blue); position: sticky; top: 85px;">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-gavel" style="color: var(--gov-blue);"></i> Official Adjudication Decision
+                    </h3>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label class="form-label">Update Grievance Status *</label>
+                        {{ form.status }}
+                        <div class="form-hint">
+                            Select 'Additional Information Required' to request missing bills from citizen. Select 'Resolved' once merchant settlement is executed.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Priority Level</label>
+                        {{ form.priority }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Statutory Finding / Resolution Notice *</label>
+                        {{ form.admin_response }}
+                        <div class="form-hint">
+                            This text is officially delivered to the consumer and displayed on the public tracking portal. Include refund details, replacement instructions, or merchant inquiry outcomes.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Internal Officer Investigation Notes (Optional)</label>
+                        {{ form.internal_notes }}
+                        <div class="form-hint">
+                            Recorded in the audit timeline for internal record keeping.
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1.75rem;">
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                            <i class="fa-solid fa-stamp"></i> Issue Decision & Update Record
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

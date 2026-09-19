@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ConsumerCare &bull; Digital Grievance Redressal System{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Ambient Radial Mesh Glow for Liquid Glass Depth -->
+    <div class="ambient-mesh" aria-hidden="true">
+        <div class="mesh-orb mesh-orb-blue"></div>
+        <div class="mesh-orb mesh-orb-cyan"></div>
+        <div class="mesh-orb mesh-orb-purple"></div>
+    </div>
+
+    <!-- Sleek Glassmorphic Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="brand-logo">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <span>ConsumerCare<span class="brand-pill">Redressal</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li>
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'track_complaint' %}" class="nav-link {% if request.resolver_match.url_name == 'track_complaint' %}active{% endif %}">
+                        <i class="fa-solid fa-route"></i> Track Status
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <li>
+                            <a href="{% url 'admin_dashboard' %}" class="nav-link {% if 'admin' in request.resolver_match.url_name %}active{% endif %}" style="color: var(--primary); font-weight: 700;">
+                                <i class="fa-solid fa-gavel"></i> Authority Portal
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="{% url 'consumer_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'consumer_dashboard' %}active{% endif %}">
+                                <i class="fa-solid fa-table-columns"></i> My Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'complaint_create' %}" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-circle-plus"></i> File Grievance
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="user-badge">
+                        <div class="user-avatar-sm">{{ user.username|make_list|first|upper }}</div>
+                        <span>{{ user.first_name|default:user.username }}</span>
+                        {% if user.is_staff %}
+                            <span class="badge-role-staff">Officer</span>
+                        {% endif %}
+                    </li>
+                    <li>
+                        <a href="{% url 'logout' %}" class="btn btn-outline btn-sm" title="Sign Out">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{% url 'login' %}" class="btn btn-outline btn-sm">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </header>
+
+    <!-- Flash Messages Container -->
+    {% if messages %}
+    <div class="alerts-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                {% if message.tags == 'success' %}
+                    <i class="fa-solid fa-circle-check" style="font-size: 1.2rem;"></i>
+                {% elif message.tags == 'danger' or message.tags == 'error' %}
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.2rem;"></i>
+                {% else %}
+                    <i class="fa-solid fa-circle-info" style="font-size: 1.2rem;"></i>
+                {% endif %}
+                <span>{{ message }}</span>
+            </div>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Floating AI Consumer Assistant Widget -->
+    <button id="aiAssistantBtn" class="ai-assistant-btn" title="Open AI Consumer Assistant">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>AI Assistant</span>
+    </button>
+
+    <!-- Sliding AI Chat Drawer -->
+    <div id="aiAssistantDrawer" class="ai-assistant-drawer">
+        <div class="ai-drawer-header">
+            <div>
+                <div class="ai-drawer-title">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>ConsumerCare AI</span>
+                </div>
+                <div class="ai-drawer-status">
+                    <i class="fa-solid fa-circle" style="color: #4ade80; font-size: 0.55rem;"></i> Online &bull; 24x7 Redressal Guide
+                </div>
+            </div>
+            <button id="aiAssistantClose" class="ai-drawer-close" title="Close Chat">&times;</button>
+        </div>
+
+        <div id="aiChatBody" class="ai-chat-body">
+            <div class="ai-msg ai-msg-assistant">
+                👋 Hello! I am your <strong>ConsumerCare AI Assistant</strong>.<br><br>
+                I can help you file complaints, track live statuses, explain statutory SLAs, and recommend appropriate remedy categories.<br><br>
+                Try clicking a topic below or type any question!
+            </div>
+        </div>
+
+        <!-- Suggestion Chips -->
+        <div class="ai-chips-strip">
+            <button class="ai-chip" data-query="How can I report a damaged product?">
+                📦 How to report damaged item?
+            </button>
+            <button class="ai-chip" data-query="How to track complaint?">
+                🔍 How to track?
+            </button>
+            <button class="ai-chip" data-query="What does Under Review mean?">
+                ⏱️ What is Under Review?
+            </button>
+            <button class="ai-chip" data-query="What evidence can I upload?">
+                📎 What evidence to upload?
+            </button>
+            <button class="ai-chip" data-query="What are SLA response deadlines?">
+                ⏰ SLA timelines
+            </button>
+            <button class="ai-chip" data-query="What happens after submission?">
+                ⚖️ Process flow
+            </button>
+        </div>
+
+        <div class="ai-drawer-input-area">
+            <input type="text" id="aiChatInput" class="ai-input-field" placeholder="Ask a question or enter Complaint ID...">
+            <button id="aiSendBtn" class="ai-send-btn" title="Send Message">
+                <i class="fa-solid fa-arrow-up"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modern Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h4><i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan);"></i> ConsumerCare Redressal System</h4>
+                <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;">
+                    A digital redressal platform empowering consumers to file formal complaints against defective goods, unfair trade practices, and deficient services with online proof verification.
+                </p>
+                <div style="font-size: 0.8rem; color: #64748b; background: rgba(255,255,255,0.04); padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--primary);">
+                    * Inspired by consumer complaint & grievance redressal mechanisms.
+                </div>
+            </div>
+
+            <div>
+                <h5 style="color: white; margin-bottom: 1rem; font-weight: 700; font-size: 0.95rem;">Quick Navigation</h5>
+                <ul class="footer-links">
+                    <li><a href="{% url 'home' %}"><i class="fa-solid fa-angle-right" style="font-size: 0.75rem;"></i> Portal Home</a></li>
+                    <li><a href="{% url 'track_complaint' %}"><i class="fa-solid fa-angle-right" style="font-size: 0.75rem;"></i> Track Grievance Status</a></li>
+                    <li><a href="{% url 'complaint_create' %}"><i class="fa-solid fa-angle-right" style="font-size: 0.75rem;"></i> File New Complaint</a></li>
+                    <li><a href="{% url 'login' %}"><i class="fa-solid fa-angle-right" style="font-size: 0.75rem;"></i> Officer & Citizen Login</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h5 style="color: white; margin-bottom: 1rem; font-weight: 700; font-size: 0.95rem;">Assistance & Contacts</h5>
+                <ul class="footer-links">
+                    <li style="color: #fde68a; font-weight: 700;"><i class="fa-solid fa-phone" style="font-size: 0.8rem;"></i> Helpline: 1915 (Toll-Free)</li>
+                    <li><i class="fa-solid fa-envelope" style="font-size: 0.8rem;"></i> support@consumercare.org</li>
+                    <li><i class="fa-solid fa-clock" style="font-size: 0.8rem;"></i> 24x7 Digital Filing System</li>
+                    <li><a href="/api/stats/"><i class="fa-solid fa-chart-pie" style="font-size: 0.8rem;"></i> Grievance Stats API</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>&copy; 2026 Digital Consumer Complaint Registration & Grievance Redressal System.</div>
+            <div style="color: #64748b;">Django 4.2 &bull; REST Framework &bull; SQLite &bull; Python</div>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/assistant.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

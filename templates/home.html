@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ConsumerCare &bull; Digital Consumer Grievance Redressal System{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+
+    <!-- Modern 2-Column Hero Section -->
+    <section class="hero-container-modern">
+        <div class="hero-grid-modern">
+            <!-- Left Column: Compelling Typography, Tracking Search & CTAs -->
+            <div>
+                <div class="hero-badge-modern">
+                    <span class="radar-dot"></span>
+                    <span>Statutory Authority &bull; 24x7 Digital Redressal</span>
+                </div>
+
+                <h1 class="hero-main-title">
+                    Fast, Transparent<br>
+                    <span class="gradient-text-sheen">Consumer Grievance</span><br>
+                    Redressal Portal
+                </h1>
+
+                <p class="hero-sub-desc">
+                    Purchased a defective product, denied warranty service, or charged unfair merchant fees? Register your formal grievance digitally with purchase evidence and track real-time authority adjudication.
+                </p>
+
+                <!-- Modern Frosted Glass Tracking Input -->
+                <form action="{% url 'track_complaint' %}" method="GET" class="hero-tracking-glass-bar">
+                    <i class="fa-solid fa-magnifying-glass" style="color: var(--primary); font-size: 1.1rem; margin-right: 0.5rem;"></i>
+                    <input type="text" name="complaint_id" class="hero-tracking-input-modern" placeholder="Enter Complaint ID (e.g. CMP-2026-000197)..." required>
+                    <button type="submit" class="btn btn-primary btn-sm" style="border-radius: var(--radius-full); padding: 0.65rem 1.4rem; font-weight: 700;">
+                        Track &rarr;
+                    </button>
+                </form>
+
+                <!-- Action CTA Row -->
+                <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center;">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin_dashboard' %}" class="btn btn-primary btn-lg" style="box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.45);">
+                                <i class="fa-solid fa-gavel"></i> Authority Command Center
+                            </a>
+                        {% else %}
+                            <a href="{% url 'complaint_create' %}" class="btn btn-primary btn-lg" style="box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.45);">
+                                <i class="fa-solid fa-circle-plus"></i> File New Grievance
+                            </a>
+                            <a href="{% url 'consumer_dashboard' %}" class="btn btn-secondary btn-lg">
+                                <i class="fa-solid fa-table-columns"></i> Open Dashboard
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'complaint_create' %}" class="btn btn-primary btn-lg" style="box-shadow: 0 10px 25px -4px rgba(37, 99, 235, 0.45);">
+                            <i class="fa-solid fa-circle-plus"></i> File a Complaint
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-secondary btn-lg">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i> Officer / Sign In
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Trust Points Strip -->
+                <div class="hero-trust-strip">
+                    <span><i class="fa-solid fa-shield-check" style="color: #10b981;"></i> 100% Free & Statutory</span>
+                    <span><i class="fa-solid fa-clock" style="color: var(--primary);"></i> 24h &bull; 72h SLA Target</span>
+                    <span><i class="fa-solid fa-scale-balanced" style="color: #8b5cf6;"></i> Legally Enforceable</span>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Live Showcase Dossier Card -->
+            <div class="hero-showcase-container">
+                <!-- Floating Micro-Badge Top Right -->
+                <div class="floating-pill-card floating-pill-1">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Evidence & Invoice Verified</span>
+                </div>
+
+                <!-- Main Glass Showcase Card -->
+                <div class="hero-showcase-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border);">
+                        <div>
+                            <div style="font-size: 0.72rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 0.4rem;">
+                                <span class="radar-dot"></span> LIVE CASE TRACKER
+                            </div>
+                            <div style="font-family: monospace; font-size: 1.35rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em; margin-top: 0.15rem;">
+                                CMP-2026-000197
+                            </div>
+                        </div>
+                        <span class="badge badge-review" style="font-size: 0.82rem; padding: 0.35rem 0.85rem;">
+                            <i class="fa-solid fa-circle" style="font-size: 0.45rem; animation: pulseDot 1.5s infinite;"></i> Under Review
+                        </span>
+                    </div>
+
+                    <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.35rem; line-height: 1.3;">
+                        Samsung 7kg Front Load Washing Machine
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.85rem; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem; background: rgba(248, 250, 252, 0.75); padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <span><strong>Merchant:</strong> XYZ Electronics</span>
+                        <span><strong>Claim:</strong> <strong style="color: #047857;">₹35,000</strong></span>
+                        <span><strong>Remedy:</strong> <strong style="color: var(--primary);">Replacement</strong></span>
+                    </div>
+
+                    <!-- 4-Node Visual Progress Stepper -->
+                    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.1rem; margin-bottom: 1.1rem;">
+                        <div class="mini-stepper">
+                            <div class="mini-step completed">
+                                <div class="mini-node"><i class="fa-solid fa-check"></i></div>
+                                <span>Submitted</span>
+                            </div>
+                            <div class="mini-step active">
+                                <div class="mini-node"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                <span>In Scrutiny</span>
+                            </div>
+                            <div class="mini-step">
+                                <div class="mini-node">3</div>
+                                <span>Investigation</span>
+                            </div>
+                            <div class="mini-step">
+                                <div class="mini-node">4</div>
+                                <span>Redressal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Authority Order Banner -->
+                    <div style="background: rgba(239, 246, 255, 0.9); border-left: 4px solid var(--primary); padding: 0.85rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; color: #1e40af; line-height: 1.5; border: 1px solid #bfdbfe;">
+                        <strong><i class="fa-solid fa-stamp"></i> Authority Order:</strong> Formal notice issued to XYZ Electronics under Consumer Protection Rules. 7 days merchant reply window.
+                    </div>
+                </div>
+
+                <!-- Floating Micro-Badge Bottom Left -->
+                <div class="floating-pill-card floating-pill-2">
+                    <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i>
+                    <span>Statutory SLA: 24h Window Active</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Real-Time Statistics -->
+    <section>
+        <div class="stats-grid">
+            <div class="stat-card card-glass">
+                <div class="stat-icon stat-icon-blue">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_complaints|default:"128" }}</h3>
+                    <p>Total Registered</p>
+                </div>
+            </div>
+
+            <div class="stat-card card-glass">
+                <div class="stat-icon stat-icon-amber">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ under_review_count|default:"27" }}</h3>
+                    <p>In Scrutiny</p>
+                </div>
+            </div>
+
+            <div class="stat-card card-glass">
+                <div class="stat-icon stat-icon-green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ resolved_count|default:"101" }}</h3>
+                    <p>Redressals Resolved</p>
+                </div>
+            </div>
+
+            <div class="stat-card card-glass">
+                <div class="stat-icon stat-icon-purple">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ resolution_rate|default:"94.5" }}%</h3>
+                    <p>Statutory Success</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4-Step Redressal Mechanism -->
+    <section style="margin: 4.5rem 0;">
+        <div style="text-align: center; margin-bottom: 2.75rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: var(--primary); font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 10px; border-radius: var(--radius-full); margin-bottom: 0.5rem; border: 1px solid #bfdbfe;">
+                Statutory Redressal Process
+            </div>
+            <h2 style="font-size: 2.3rem; font-weight: 800; letter-spacing: -0.02em;">How Consumer Redressal Works</h2>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 580px; margin: 0.35rem auto 0;">
+                A structured, four-step digital workflow from initial complaint to binding remedy.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+            <div class="card-glass" style="text-align: center; border-top: 4px solid var(--primary); padding: 2rem 1.5rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.3rem; font-weight: 800;">
+                    1
+                </div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">Submit Details</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.55;">
+                    Enter product name, purchase date, invoice amount, seller details, and clear description of the defect.
+                </p>
+            </div>
+
+            <div class="card-glass" style="text-align: center; border-top: 4px solid var(--accent-cyan); padding: 2rem 1.5rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.3rem; font-weight: 800;">
+                    2
+                </div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">Upload Evidence</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.55;">
+                    Attach tax invoices, warranty cards, delivery receipts, or damage photos via secure drag-and-drop.
+                </p>
+            </div>
+
+            <div class="card-glass" style="text-align: center; border-top: 4px solid var(--purple); padding: 2rem 1.5rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--purple-light); color: var(--purple); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.3rem; font-weight: 800;">
+                    3
+                </div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">Authority Review</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.55;">
+                    Grievance Officer inspects facts, evaluates priority, communicates with merchant, and updates status.
+                </p>
+            </div>
+
+            <div class="card-glass" style="text-align: center; border-top: 4px solid var(--success); padding: 2rem 1.5rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.3rem; font-weight: 800;">
+                    4
+                </div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.5rem;">Remedy & Redressal</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.55;">
+                    Receive an official redressal order: full refund, free replacement, repair, or damage compensation.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Complaint Categories -->
+    <section style="margin: 4.5rem 0;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em;">Grievance Sectors Covered</h2>
+            <p style="color: var(--text-muted); font-size: 1rem;">Resolving disputes across goods, electronics, and digital services.</p>
+        </div>
+
+        <div class="category-grid">
+            <div class="category-card card-glass">
+                <span class="category-icon">📱</span>
+                <div class="category-name">Mobile & Computers</div>
+            </div>
+            <div class="category-card card-glass">
+                <span class="category-icon">🧺</span>
+                <div class="category-name">Home Appliances</div>
+            </div>
+            <div class="category-card card-glass">
+                <span class="category-icon">📦</span>
+                <div class="category-name">Delivery & Logistics</div>
+            </div>
+            <div class="category-card card-glass">
+                <span class="category-icon">🌐</span>
+                <div class="category-name">Internet & Telecom</div>
+            </div>
+            <div class="category-card card-glass">
+                <span class="category-icon">🍔</span>
+                <div class="category-name">Food & Beverages</div>
+            </div>
+            <div class="category-card card-glass">
+                <span class="category-icon">🛋️</span>
+                <div class="category-name">Furniture & Living</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Resolved Redressals Table -->
+    {% if resolved_complaints %}
+    <section style="margin: 4.5rem 0;">
+        <div class="card-glass" style="padding: 0; overflow: hidden;">
+            <div style="padding: 1.5rem 1.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.6rem;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+                        Public Transparency Bulletin: Recent Resolutions
+                    </h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                        Statutory redressal orders executed in consumer favour with verified outcomes
+                    </p>
+                </div>
+                <span class="badge badge-resolved" style="font-size: 0.82rem; padding: 0.35rem 0.85rem;">100% Enforced</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="padding-left: 1.75rem;">Case ID</th>
+                            <th>Product / Service</th>
+                            <th>Merchant</th>
+                            <th>Sector</th>
+                            <th>Amount</th>
+                            <th>Remedy Executed</th>
+                            <th style="padding-right: 1.75rem;">Resolved On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rc in resolved_complaints %}
+                        <tr>
+                            <td style="padding-left: 1.75rem;">
+                                <a href="{% url 'track_complaint' %}?complaint_id={{ rc.complaint_id }}" style="font-family: monospace; font-weight: 800; color: var(--primary); text-decoration: none;">
+                                    {{ rc.complaint_id }}
+                                </a>
+                            </td>
+                            <td style="font-weight: 700; color: var(--text-primary);">{{ rc.product_name }}</td>
+                            <td style="color: var(--text-secondary);">{{ rc.seller }}</td>
+                            <td><span class="badge" style="background: #f8fafc; color: var(--text-secondary); border: 1px solid var(--border);">{{ rc.category }}</span></td>
+                            <td style="font-weight: 800; color: #047857;">₹{{ rc.amount_paid }}</td>
+                            <td>
+                                <span class="badge badge-resolved">
+                                    <i class="fa-solid fa-check"></i> {{ rc.expected_resolution }}
+                                </span>
+                            </td>
+                            <td style="color: var(--text-muted); font-size: 0.82rem; padding-right: 1.75rem;">
+                                {{ rc.updated_at|date:"d M Y" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}

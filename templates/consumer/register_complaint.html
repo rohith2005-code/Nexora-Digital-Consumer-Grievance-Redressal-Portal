@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Register Consumer Complaint | National Grievance Portal{% endblock %}
+
+{% block content %}
+<div class="container-narrow animate-fade-in" style="max-width: 880px;">
+
+    <!-- Registration Header -->
+    <div style="margin-bottom: 2rem; text-align: center;">
+        <div class="hero-badge-strip">
+            <i class="fa-solid fa-file-shield" style="color: var(--gov-blue);"></i> Official Consumer Protection Filing
+        </div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--gov-navy-dark); letter-spacing: -0.02em;">
+            File a New Consumer Grievance
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 620px; margin: 0.25rem auto 0;">
+            Please furnish complete transaction particulars and factual dispute details. Accurate purchase and seller records enable the Grievance Redressal Authority to conduct speedy inquiry.
+        </p>
+    </div>
+
+    <!-- Official Advisory Note -->
+    <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: var(--radius-md); padding: 0.9rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.85rem;">
+        <i class="fa-solid fa-circle-info" style="color: var(--gov-blue); font-size: 1.4rem;"></i>
+        <div style="font-size: 0.85rem; color: #1e40af; line-height: 1.5;">
+            <strong>Advisory:</strong> Attaching your tax invoice, warranty document, or delivery note significantly accelerates seller response and official adjudication.
+        </div>
+    </div>
+
+    <!-- Complaint Form Card -->
+    <div class="card" style="padding: 2.25rem;">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'complaint_create' %}" id="complaintForm">
+            {% csrf_token %}
+
+            <!-- Section 1: Merchant & Transaction Particulars -->
+            <div style="margin-bottom: 2.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 2px solid #f1f5f9;">
+                    <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--gov-navy); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800;">
+                        1
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--gov-navy-dark);">
+                        Product / Service & Transaction Particulars
+                    </h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Product or Service Name *</label>
+                    {{ form.product_name }}
+                    <div class="form-hint">e.g. Samsung 7kg Washing Machine, Apple iPhone 15, Airtel Fiber Broadband, Urban Ladder Sofa</div>
+                    {% if form.product_name.errors %}
+                        <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.product_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Sector / Category *</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.category.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Seller / Manufacturer / Provider *</label>
+                        {{ form.seller }}
+                        <div class="form-hint">Name of the store, website, or entity from whom purchased</div>
+                        {% if form.seller.errors %}
+                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.seller.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Date of Purchase / Agreement *</label>
+                        {{ form.purchase_date }}
+                        {% if form.purchase_date.errors %}
+                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.purchase_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Total Amount Paid (₹) *</label>
+                        {{ form.amount_paid }}
+                        <div class="form-hint">Invoice total including taxes</div>
+                        {% if form.amount_paid.errors %}
+                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.amount_paid.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Grievance Details & Desired Remedy -->
+            <div style="margin-bottom: 2.25rem;">
+                <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 2px solid #f1f5f9;">
+                    <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--gov-navy); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800;">
+                        2
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--gov-navy-dark);">
+                        Grievance Specifics & Desired Redressal
+                    </h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Nature of Grievance / Defect *</label>
+                        {{ form.complaint_type }}
+                        {% if form.complaint_type.errors %}
+                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.complaint_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">What Remedy Do You Expect? *</label>
+                        {{ form.expected_resolution }}
+                        {% if form.expected_resolution.errors %}
+                            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.expected_resolution.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Priority Assessment</label>
+                    {{ form.priority }}
+                    <div class="form-hint">Choose 'High' for safety hazards, critical home utilities, or urgent substantial financial loss.</div>
+                </div>
+
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <label class="form-label" style="margin-bottom: 0;">Factual Statement of Complaint *</label>
+                        <span id="charCounter" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">0 characters</span>
+                    </div>
+                    {{ form.description }}
+                    <div class="form-hint">
+                        Clearly state what occurred, defect timeline, any prior communication or ticket numbers with the seller, and their refusal/inaction.
+                    </div>
+                    {% if form.description.errors %}
+                        <div style="color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem;">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Section 3: Verification Proof & Evidence -->
+            <div style="margin-bottom: 2.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.25rem; padding-bottom: 0.6rem; border-bottom: 2px solid #f1f5f9;">
+                    <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--gov-navy); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800;">
+                        3
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--gov-navy-dark);">
+                        Supporting Proof & Evidence Documents (Recommended)
+                    </h3>
+                </div>
+
+                <!-- Clean Official Dropzone -->
+                <div class="upload-dropzone" id="fileDropzone">
+                    <div class="upload-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <h4 style="font-weight: 700; font-size: 1rem; color: var(--gov-navy); margin-bottom: 0.35rem;">
+                        Click to select or drag and drop your invoice / evidence files
+                    </h4>
+                    <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 0.85rem;">
+                        Supported: PDF, JPG, PNG, WEBP (Invoices, delivery receipts, warranty cards, defect photos)
+                    </p>
+                    <button type="button" class="btn btn-outline btn-sm">
+                        <i class="fa-solid fa-folder-open"></i> Browse Files
+                    </button>
+
+                    <!-- Hidden Input -->
+                    <div style="display: none;">
+                        {{ form.attachment }}
+                    </div>
+                </div>
+
+                <!-- File Preview Card -->
+                <div id="fileInfoContainer" style="display: none; margin-top: 1rem; background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: var(--radius-md); padding: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 1.4rem;"></i>
+                        <div style="flex: 1;">
+                            <strong style="color: #065f46; font-size: 0.88rem;">Document Attached:</strong>
+                            <div id="fileNameDisplay" style="font-size: 0.82rem; color: #047857; font-weight: 700; font-family: monospace;"></div>
+                        </div>
+                    </div>
+                    <img id="filePreviewImg" class="evidence-thumb" style="display: none; margin-top: 0.85rem; max-height: 220px; border-radius: 6px;" alt="Preview">
+                </div>
+            </div>
+
+            <!-- Submit Action -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #f1f5f9; padding-top: 1.75rem;">
+                <a href="{% url 'consumer_dashboard' %}" class="btn btn-outline">
+                    <i class="fa-solid fa-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-stamp"></i> Register Complaint & Generate Tracking ID
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
