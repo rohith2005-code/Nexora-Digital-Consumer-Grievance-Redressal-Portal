@@ -111,15 +111,26 @@
 
         <!-- 1-Click Demo Evaluation Credentials (For Mentors & Testing) -->
         <div style="background: rgba(241, 245, 249, 0.7); border: 1.5px dashed #cbd5e1; border-radius: var(--radius-md); padding: 1rem; font-size: 0.82rem;">
-            <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.45rem;">
-                <i class="fa-solid fa-bolt-lightning" style="color: #f59e0b;"></i> Instant Demo Switcher (Click to Auto-Fill):
+            <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between;">
+                <span style="display: flex; align-items: center; gap: 0.45rem;">
+                    <i class="fa-solid fa-bolt-lightning" style="color: #f59e0b;"></i> Instant Demo Switcher:
+                </span>
+                <a href="{% url 'setup_demo' %}" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600;" title="Re-initialize sample data">
+                    <i class="fa-solid fa-rotate"></i> Reset Accounts
+                </a>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('rahul_consumer', 'consumerpass123')" style="font-size: 0.8rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px;">
-                    <i class="fa-solid fa-user" style="color: var(--primary);"></i> Rahul (Consumer)
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('user', 'user123')" style="font-size: 0.8rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px;">
+                    <i class="fa-solid fa-user" style="color: var(--primary);"></i> Citizen (user)
                 </button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('officer_admin', 'adminpass123')" style="font-size: 0.8rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px; border-color: #ddd6fe; color: #6d28d9;">
-                    <i class="fa-solid fa-gavel" style="color: #7c3aed;"></i> Officer Admin
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('admin', 'admin123')" style="font-size: 0.8rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px; border-color: #ddd6fe; color: #6d28d9;">
+                    <i class="fa-solid fa-crown" style="color: #7c3aed;"></i> Admin (admin)
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('rahul_consumer', 'consumerpass123')" style="font-size: 0.78rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px;">
+                    <i class="fa-solid fa-user-check" style="color: #0284c7;"></i> rahul_consumer
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('officer_admin', 'adminpass123')" style="font-size: 0.78rem; justify-content: flex-start; padding: 0.45rem 0.75rem; border-radius: 8px; border-color: #ddd6fe; color: #6d28d9;">
+                    <i class="fa-solid fa-gavel" style="color: #7c3aed;"></i> officer_admin
                 </button>
             </div>
         </div>

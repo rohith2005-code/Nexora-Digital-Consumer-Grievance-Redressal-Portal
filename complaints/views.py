@@ -22,11 +22,89 @@ def staff_check(user):
     return user.is_authenticated and user.is_staff
 
 
+def ensure_default_accounts():
+    """Ensure essential demo admin and consumer accounts exist with known passwords."""
+    from django.contrib.auth.models import User
+    try:
+        # 1. Authority Staff / Admin Accounts
+        if not User.objects.filter(username='officer_admin').exists():
+            admin1 = User.objects.create(
+                username='officer_admin',
+                first_name='Adjudication Officer',
+                last_name='Sharma',
+                email='grievance.officer@consumercare.gov.in',
+                is_staff=True,
+                is_superuser=True,
+            )
+            admin1.set_password('adminpass123')
+            admin1.save()
+
+        if not User.objects.filter(username='admin').exists():
+            admin2 = User.objects.create(
+                username='admin',
+                first_name='System',
+                last_name='Administrator',
+                email='admin@consumercare.gov.in',
+                is_staff=True,
+                is_superuser=True,
+            )
+            admin2.set_password('admin123')
+            admin2.save()
+
+        # 2. Consumer Citizen Accounts
+        if not User.objects.filter(username='rahul_consumer').exists():
+            u1 = User.objects.create(
+                username='rahul_consumer',
+                first_name='Rahul',
+                last_name='Verma',
+                email='rahul.verma@example.com',
+                is_staff=False,
+            )
+            u1.set_password('consumerpass123')
+            u1.save()
+
+        if not User.objects.filter(username='user').exists():
+            u2 = User.objects.create(
+                username='user',
+                first_name='Citizen',
+                last_name='User',
+                email='user@consumercare.gov.in',
+                is_staff=False,
+            )
+            u2.set_password('user123')
+            u2.save()
+
+        # 3. Populate sample complaints if table is completely empty
+        if Complaint.objects.count() == 0:
+            import seed_data
+            seed_data.run_seed()
+    except Exception:
+        pass
+
+
+def setup_demo_view(request):
+    """Explicit endpoint to initialize or re-verify demo accounts and sample complaints."""
+    ensure_default_accounts()
+    try:
+        import seed_data
+        seed_data.run_seed()
+    except Exception:
+        pass
+    messages.success(
+        request,
+        "Demo accounts & sample grievances verified! "
+        "Log in as Officer Admin (officer_admin / adminpass123 or admin / admin123) "
+        "or Consumer (rahul_consumer / consumerpass123 or user / user123)."
+    )
+    return redirect('login')
+
+
 # -------------------------------------------------------------
 # Home & Public Views
 # -------------------------------------------------------------
 def home_view(request):
     """Modern landing page with platform stats and quick tracking."""
+    ensure_default_accounts()
     # Run background SLA check
     check_and_escalate_overdue_complaints()
 
@@ -106,6 +184,7 @@ def register_view(request):
 
 
 def login_view(request):
+    ensure_default_accounts()
     if request.user.is_authenticated:
         return redirect('login_redirect')
 

@@ -3,7 +3,7 @@ services:
     name: consumercare-portal
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn grievance_core.wsgi:application"
+    startCommand: "python manage.py migrate && python seed_data.py && gunicorn grievance_core.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.11

@@ -9,8 +9,12 @@ import django
 from datetime import date, timedelta
 from django.utils import timezone
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'grievance_core.settings')
-django.setup()
+if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'grievance_core.settings')
+try:
+    django.setup()
+except Exception:
+    pass
 
 from django.contrib.auth.models import User
 from complaints.models import Complaint, ComplaintTimeline
@@ -20,8 +24,8 @@ from django.core.files.base import ContentFile
 def run_seed():
     print("Seeding database...")
 
-    # 1. Create Authority Staff / Admin User
-    admin_user, created = User.objects.get_or_create(
+    # 1. Create Authority Staff / Admin Users
+    admin_user, _ = User.objects.get_or_create(
         username='officer_admin',
         defaults={
             'first_name': 'Adjudication Officer',
@@ -32,8 +36,25 @@ def run_seed():
         }
     )
     admin_user.set_password('adminpass123')
+    admin_user.is_staff = True
+    admin_user.is_superuser = True
     admin_user.save()
-    print(f"Created/Updated Officer Admin: {admin_user.username} (Password: adminpass123)")
+
+    admin_simple, _ = User.objects.get_or_create(
+        username='admin',
+        defaults={
+            'first_name': 'System',
+            'last_name': 'Admin',
+            'email': 'admin@consumercare.gov.in',
+            'is_staff': True,
+            'is_superuser': True,
+        }
+    )
+    admin_simple.set_password('admin123')
+    admin_simple.is_staff = True
+    admin_simple.is_superuser = True
+    admin_simple.save()
+    print("Created/Updated Admin Users: officer_admin (adminpass123), admin (admin123)")
 
     # 2. Create Sample Consumer Users
     consumer_rahul, _ = User.objects.get_or_create(
@@ -48,6 +69,18 @@ def run_seed():
     consumer_rahul.set_password('consumerpass123')
     consumer_rahul.save()
 
+    consumer_simple, _ = User.objects.get_or_create(
+        username='user',
+        defaults={
+            'first_name': 'Citizen',
+            'last_name': 'User',
+            'email': 'user@consumercare.gov.in',
+            'is_staff': False,
+        }
+    )
+    consumer_simple.set_password('user123')
+    consumer_simple.save()
+
     consumer_priya, _ = User.objects.get_or_create(
         username='priya_consumer',
         defaults={
@@ -59,10 +92,11 @@ def run_seed():
     )
     consumer_priya.set_password('consumerpass123')
     consumer_priya.save()
-    print("Created Consumers: rahul_consumer, priya_consumer")
+    print("Created Consumers: rahul_consumer (consumerpass123), user (user123), priya_consumer")
 
-    # Clear old seeded complaints for clean restart
-    Complaint.objects.all().delete()
+    if Complaint.objects.count() > 0:
+        print("Complaints already exist. Preserving existing complaints.")
+        return
 
     # Sample demo complaints
     sample_data = [

@@ -11,6 +11,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('login-redirect/', views.login_redirect_view, name='login_redirect'),
     path('logout/', views.logout_view, name='logout'),
+    path('setup-demo/', views.setup_demo_view, name='setup_demo'),
 
     # Consumer Portal
     path('dashboard/', views.consumer_dashboard_view, name='consumer_dashboard'),
