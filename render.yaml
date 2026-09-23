@@ -2,7 +2,7 @@ services:
   - type: web
     name: consumercare-portal
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "bash build.sh"
     startCommand: "python manage.py migrate && python seed_data.py && gunicorn grievance_core.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
